@@ -1,0 +1,43 @@
+{
+  "name": "复读机",
+  "description": "群友复读时偶尔跟一句，偶尔打断一下。",
+  "authors": [
+    {
+      "name": "13",
+      "github": null
+    }
+  ],
+  "homepage": "https://github.com/g1331/tenko-plugins/tree/main/plugins/repeater",
+  "license": "GPL-3.0-only",
+  "tags": [
+    "娱乐"
+  ],
+  "tier": "official",
+  "icon": "icons/repeater-fefb22f8.png",
+  "source": {
+    "type": "pypi",
+    "package": "tenko-plugin-repeater"
+  },
+  "versions": [
+    {
+      "version": "0.1.0",
+      "pin": {
+        "sha256": [
+          "803e0da3ce80de0673940675268160c507bdb08cea9e1dc8ddd78ce4ff0b77c4",
+          "ec59f298a0cab14f17693e03f91203812b8783ad9bd38e94558adf2965958a19"
+        ]
+      },
+      "requires_api": "<0.3,>=0.2",
+      "requires_python": "<3.14,>=3.11",
+      "published_at": "2026-10-21T16:10:22Z",
+      "tested": {
+        "tenko": "4.0.0-rc22",
+        "api": "0.2.0",
+        "python": "3.12",
+        "at": "2026-10-21T16:11:45Z"
+      },
+      "valid": true,
+      "yanked": null
+    }
+  ]
+}
