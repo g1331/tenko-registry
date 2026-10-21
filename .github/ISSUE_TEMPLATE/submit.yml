@@ -33,7 +33,7 @@ body:
       description: |
         粘贴图片的 https 地址，或直接把图片拖进来上传。不填则使用 `plugin.metadata(icon=...)` 里的 https 地址；都没有就不显示图标。
 
-        要求：PNG、WebP 或 JPEG（不支持 SVG 和动图），短边不小于 64 px，文件不超过 1 MB。
+        要求：透明背景的单色图形，PNG 或 WebP（不支持 JPEG、SVG 和动图），短边不小于 64 px，文件不超过 1 MB。
         系统会居中裁成正方形并缩放为 128x128 的 PNG。
   - type: checkboxes
     id: confirm

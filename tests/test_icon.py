@@ -40,3 +40,10 @@ def test_oversize_input_is_rejected():
 def test_too_small_is_rejected():
     with pytest.raises(IconError, match="64"):
         process_icon(png_bytes((63, 200)))
+
+
+def test_opaque_icon_is_rejected():
+    out = io.BytesIO()
+    Image.new("RGB", (128, 128), (200, 30, 30)).save(out, format="PNG")
+    with pytest.raises(IconError, match="透明背景"):
+        process_icon(out.getvalue())

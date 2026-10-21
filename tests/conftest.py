@@ -11,7 +11,11 @@ REPO = Path(__file__).resolve().parent.parent
 
 def png_bytes(size=(200, 100), color=(200, 30, 30)) -> bytes:
     out = io.BytesIO()
-    Image.new("RGB", size, color).save(out, format="PNG")
+    # 透明底上画一块实心色，模拟符合要求的图形图标。
+    image = Image.new("RGBA", size, (0, 0, 0, 0))
+    w, h = size
+    image.paste((*color, 255), (w // 4, h // 4, w * 3 // 4, h * 3 // 4))
+    image.save(out, format="PNG")
     return out.getvalue()
 
 
