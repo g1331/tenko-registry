@@ -1,0 +1,19 @@
+# 允许收录的开源许可证（SPDX 标识符），每行一个；# 开头为注释。
+# 复合表达式（如 MIT OR Apache-2.0）中的每个标识符都必须在此列表内。
+0BSD
+Apache-2.0
+AGPL-3.0-only
+AGPL-3.0-or-later
+BSD-2-Clause
+BSD-3-Clause
+GPL-2.0-only
+GPL-2.0-or-later
+GPL-3.0-only
+GPL-3.0-or-later
+ISC
+LGPL-3.0-only
+LGPL-3.0-or-later
+MIT
+MPL-2.0
+Unlicense
+Zlib
