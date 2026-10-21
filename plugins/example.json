@@ -1,0 +1,43 @@
+{
+  "name": "示例插件",
+  "description": "记录每位用户使用示例命令的次数，并保存备注。",
+  "authors": [
+    {
+      "name": "13",
+      "github": null
+    }
+  ],
+  "homepage": "https://github.com/g1331/tenko/tree/main/examples/tenko-plugin-example",
+  "license": "GPL-3.0-only",
+  "tags": [
+    "示例"
+  ],
+  "tier": "listed",
+  "icon": null,
+  "source": {
+    "type": "pypi",
+    "package": "tenko-plugin-example"
+  },
+  "versions": [
+    {
+      "version": "0.1.0",
+      "pin": {
+        "sha256": [
+          "33997ef4ed891e1e8084ee3762e8e7060258c69cb868512a35eae0b16d762201",
+          "f3e781231407ca728b77914624e6b5790b7473c290e0835e616af31724525b8a"
+        ]
+      },
+      "requires_api": "<0.3,>=0.2",
+      "requires_python": "<3.14,>=3.11",
+      "published_at": "2026-10-21T16:10:22Z",
+      "tested": {
+        "tenko": "4.0.0-rc22",
+        "api": "0.2.0",
+        "python": "3.12",
+        "at": "2026-10-21T16:11:52Z"
+      },
+      "valid": true,
+      "yanked": null
+    }
+  ]
+}
