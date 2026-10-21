@@ -105,7 +105,7 @@ jobs:
           commit-message: "feat(registry): 收录插件 ${{ needs.check.outputs.plugin_id }}"
           title: "收录插件 ${{ needs.check.outputs.plugin_id }}"
           body: |
-            由 #${{ github.event.issue.number }} 自动生成。
+            由 #${{ github.event.issue.number }} 自动生成，合并后关闭 Closes #${{ github.event.issue.number }}。
 
             合并后 `pages.yml` 会重新发布 index.json。
           labels: submission
