@@ -1,0 +1,44 @@
+name: 提交插件
+description: 把你的 Tenko 插件收录到插件目录
+title: "[收录] "
+labels: ["submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        只需要填写来源。名称、简介、作者、许可证、版本和兼容范围都由 CI 从你的包里读取，
+        不用重复填写。提交前请先阅读 [README](https://github.com/g1331/tenko-registry/blob/main/README.md)。
+  - type: input
+    id: source
+    attributes:
+      label: 插件来源
+      description: |
+        二选一：
+        - PyPI 包名，例如 `tenko-plugin-example`
+        - GitHub 仓库和标签，例如 `https://github.com/you/tenko-plugin-example@v0.1.0`
+
+        分发包名必须以 `tenko-plugin-` 开头；你必须是对应 GitHub 仓库的所有者，或有推送权限的协作者。
+      placeholder: tenko-plugin-example
+    validations:
+      required: true
+  - type: input
+    id: tags
+    attributes:
+      label: 标签（可选）
+      description: 最多 5 个，用逗号分隔，每个不超过 16 个字符，例如 `工具, 娱乐`。
+  - type: textarea
+    id: icon
+    attributes:
+      label: 图标（可选）
+      description: |
+        粘贴图片的 https 地址，或直接把图片拖进来上传。不填则使用 `plugin.metadata(icon=...)` 里的 https 地址；都没有就不显示图标。
+
+        要求：PNG、WebP 或 JPEG（不支持 SVG 和动图），短边不小于 64 px，文件不超过 1 MB。
+        系统会居中裁成正方形并缩放为 128x128 的 PNG。
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: 确认
+      options:
+        - label: 我确认我是该项目的所有者或维护者，并同意按 README 中的规则收录
+          required: true

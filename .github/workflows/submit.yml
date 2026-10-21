@@ -1,0 +1,111 @@
+name: submit
+
+# 收录申请：检查（会安装并导入第三方插件代码，只有只读权限）和
+# 发布（不运行任何插件代码，才有写权限）分成两个 job。
+on:
+  issues:
+    types: [opened, edited]
+
+concurrency:
+  group: submit-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  check:
+    if: contains(github.event.issue.labels.*.name, 'submission')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    outputs:
+      ok: ${{ steps.check.outputs.ok }}
+      plugin_id: ${{ steps.check.outputs.plugin_id }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+      - run: uv sync --locked
+      - name: 解析表单并检查
+        id: check
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          SUBMITTER: ${{ github.event.issue.user.login }}
+          # 只用于查询协作者权限；运行插件代码的子进程拿不到它。
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p out
+          if ! printf '%s' "$ISSUE_BODY" | uv run python -m registry parse-issue > "$RUNNER_TEMP/form.env" 2> out/report.md; then
+            { echo "## 收录检查未通过"; echo; sed 's/^/- /' out/report.md; } > "$RUNNER_TEMP/r" && mv "$RUNNER_TEMP/r" out/report.md
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          source=$(sed -n 's/^source=//p' "$RUNNER_TEMP/form.env")
+          tags=$(sed -n 's/^tags=//p' "$RUNNER_TEMP/form.env")
+          icon=$(sed -n 's/^icon=//p' "$RUNNER_TEMP/form.env")
+          args=(--source "$source" --submitter "$SUBMITTER" --tags "$tags")
+          if [ -n "$icon" ]; then args+=(--icon "$icon"); fi
+          if uv run python -m registry check-submission "${args[@]}" > out/report.md; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+            plugin=$(git ls-files --others --exclude-standard plugins | head -n1)
+            echo "plugin_id=$(basename "$plugin" .json)" >> "$GITHUB_OUTPUT"
+            cp -r plugins icons out/
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: submission
+          path: out
+          retention-days: 7
+
+  publish:
+    needs: check
+    if: always() && needs.check.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: submission
+          path: out
+      - name: 在 issue 下回复报告
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ github.event.issue.number }}
+        run: gh issue comment "$ISSUE" --repo "$GITHUB_REPOSITORY" --body-file out/report.md
+      - name: 只取数据文件
+        if: needs.check.outputs.ok == 'true'
+        run: |
+          # 产物来自运行过第三方代码的 job，这里只接受 plugins/*.json 和 icons/*.png，随后会再次完整校验。
+          cp -f out/plugins/*.json plugins/
+          cp -f out/icons/*.png icons/ 2>/dev/null || true
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+        if: needs.check.outputs.ok == 'true'
+      - name: 校验数据
+        if: needs.check.outputs.ok == 'true'
+        run: uv sync --locked && uv run python -m registry build --out "$RUNNER_TEMP/dist"
+      - name: 创建合并请求
+        if: needs.check.outputs.ok == 'true'
+        # 注意：用 GITHUB_TOKEN 创建的 PR 不会触发 ci.yml，合并前请在 PR 里确认检查报告。
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
+        with:
+          branch: submit/${{ needs.check.outputs.plugin_id }}
+          add-paths: |
+            plugins/
+            icons/
+          commit-message: "feat(registry): 收录插件 ${{ needs.check.outputs.plugin_id }}"
+          title: "收录插件 ${{ needs.check.outputs.plugin_id }}"
+          body: |
+            由 #${{ github.event.issue.number }} 自动生成。
+
+            合并后 `pages.yml` 会重新发布 index.json。
+          labels: submission
