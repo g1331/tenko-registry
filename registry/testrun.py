@@ -11,9 +11,19 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from packaging.specifiers import InvalidSpecifier, SpecifierSet
+
 from . import net
 from .discover import tenko_api_specifier
-from .model import DIST_PREFIX, ROOT, load_plugin, normalize_dist, now_iso, plugin_files, save_plugin
+from .model import (
+    DIST_PREFIX,
+    ROOT,
+    load_plugin,
+    normalize_dist,
+    now_iso,
+    plugin_files,
+    save_plugin,
+)
 
 MAX_DIST_BYTES = 16 * 1024 * 1024
 DEFAULT_PYTHON = "3.12"
@@ -180,6 +190,18 @@ def apply_outcome(version: dict[str, Any], outcome: Outcome, at: str | None = No
         version["requires_python"] = version.get("requires_python") or outcome.probe["requires_python"]
 
 
+def outside_api_range(version: dict[str, Any], outcome: Outcome) -> bool:
+    """测试宿主的 tenko-api 不在该版本声明的范围内：这是不兼容，不是插件坏了。"""
+
+    spec, api = version.get("requires_api"), (outcome.host or {}).get("api")
+    if not spec or not api or api == "unknown":
+        return False
+    try:
+        return not SpecifierSet(spec).contains(api, prereleases=True)
+    except InvalidSpecifier:
+        return False
+
+
 def pick_version(entry: dict[str, Any], wanted: str | None) -> dict[str, Any]:
     if not entry["versions"]:
         raise ValueError("该插件还没有任何版本，请先运行 discover")
@@ -214,6 +236,13 @@ def retest(
                 outcome = run_test(entry["source"], item, plugin_id=path.stem, tenko_ref=ref, **kwargs)
             except InfraError as error:
                 infra.append(f"{path.stem} {item['version']}: {error}")
+                continue
+            if outside_api_range(item, outcome):
+                # 宿主升级 tenko-api 后旧版本、或领先于宿主的新版本都会走到这里，保留上次结果。
+                lines.append(
+                    f"跳过  {path.stem} {item['version']}：要求 tenko-api {item['requires_api']}，"
+                    f"测试宿主是 {outcome.host['api']}"
+                )
                 continue
             apply_outcome(item, outcome)
             lines.append(format_outcome(path.stem, item["version"], outcome))
