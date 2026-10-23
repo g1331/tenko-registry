@@ -31,10 +31,10 @@
       "requires_python": "<3.14,>=3.11",
       "published_at": "2026-10-22T03:52:12Z",
       "tested": {
-        "tenko": "4.0.0-rc28",
+        "tenko": "4.0.0-rc34",
         "api": "0.3.0",
         "python": "3.12",
-        "at": "2026-10-22T08:44:48Z"
+        "at": "2026-10-23T08:40:23Z"
       },
       "valid": true,
       "yanked": null
