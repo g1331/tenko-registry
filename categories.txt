@@ -1,0 +1,9 @@
+manage 群管理
+ai AI 对话
+fun 娱乐
+gametool 游戏查询
+feed 资讯订阅
+image 图片表情
+tool 实用工具
+library 开发支持
+other 其他

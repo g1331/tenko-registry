@@ -58,7 +58,7 @@ def cmd_test(args: argparse.Namespace) -> int:
 def cmd_check_submission(args: argparse.Namespace) -> int:
     tags = [t.strip() for t in (args.tags or "").split(",") if t.strip()]
     report = check_submission(
-        args.source, args.submitter, tags=tags, icon=args.icon or None,
+        args.source, args.submitter, category=args.category or "", tags=tags, icon=args.icon or None,
         **_host_args(args),
     )
     print(report.markdown())
@@ -117,6 +117,7 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("check-submission", help="检查一次收录申请，输出 Markdown 报告")
     p.add_argument("--source", required=True, help="PyPI 包名，或 https://github.com/<用户>/<仓库>@<标签>")
     p.add_argument("--submitter", required=True, help="提交者的 GitHub 用户名")
+    p.add_argument("--category", help="分类 ID 或显示名，见 categories.txt")
     p.add_argument("--tags", help="逗号分隔的标签")
     p.add_argument("--icon", help="图标的 https 地址")
     add_host_options(p)

@@ -18,7 +18,7 @@
 3. 用 `plugin.metadata(...)` 提供 `name` 和 `description`（不超过 80 个字符），可选 `author`、`icon`。
 4. 发布到 PyPI，或给 GitHub 仓库打 `vX.Y.Z` 标签。
 5. 到[提交插件](https://github.com/g1331/tenko-registry/issues/new?template=submit.yml)填写来源：
-   PyPI 包名，或 `https://github.com/你/仓库@v0.1.0`。标签和图标可选。
+   PyPI 包名，或 `https://github.com/你/仓库@v0.1.0`，并选一个[分类](#分类)。标签和图标可选。
 
 你必须是 GitHub 仓库的所有者，或有推送权限的协作者（PyPI 来源要求项目链接里有指向该仓库的地址）。
 机器人会在 issue 下回复检查报告；没通过时按原因修改后编辑 issue 即可重新检查，通过后会自动开一个合并请求，
@@ -32,6 +32,24 @@
 
 CI 的测试会安装你的插件并用真实的 Tenko 宿主加载它，所以插件必须能在没有额外配置的情况下被加载
 （缺少必填配置会导致加载失败）。
+
+### 分类
+
+每个插件属于一个分类，插件市场按分类筛选。标签只参与搜索，可以写具体的词（如游戏名、站点名）。
+
+| ID | 显示名 | 收什么 |
+| --- | --- | --- |
+| `manage` | 群管理 | 入群审核、违禁词、禁言、清理、群数据统计 |
+| `ai` | AI 对话 | 大模型聊天、AI 绘图、语音合成 |
+| `fun` | 娱乐 | 群内小游戏、签到、抽签、复读等互动 |
+| `gametool` | 游戏查询 | 查外部游戏的数据：战绩、服务器、角色、活动 |
+| `feed` | 资讯订阅 | 动态推送、直播提醒、RSS、新闻 |
+| `image` | 图片表情 | 表情包生成、图片处理、搜图 |
+| `tool` | 实用工具 | 天气、翻译、提醒、计算等小工具 |
+| `library` | 开发支持 | 给其他插件用的库或服务，以及示例插件 |
+| `other` | 其他 | 放不进上面任何一类的 |
+
+拿不准就选“其他”，维护者审核时会调整。新增分类请开 PR 修改 `categories.txt` 和上表。
 
 ### 图标要求
 
@@ -55,6 +73,7 @@ issue 里显式给出的图标不合格会拒绝收录；`plugin.metadata` 里�
 | `removed.json` | 下架记录 `[{id, reason, at}]`，只做历史，不进入 index.json |
 | `icons/` | 处理后的图标 |
 | `builtin_ids.txt`、`licenses.txt` | 保留的内置插件 ID、允许的许可证 |
+| `categories.txt` | 分类，每行 `<ID> <显示名>`，顺序即展示顺序 |
 | `registry/` | CLI，`python -m registry <命令>` |
 
 ### 工作流
@@ -72,6 +91,7 @@ issue 里显式给出的图标不合格会拒绝收录；`plugin.metadata` 里�
 
 直接编辑数据文件，然后运行 `uv run python -m registry build` 校验。
 
+- **调整分类**：修改 `plugins/<id>.json` 的 `category`（取 `categories.txt` 里的 ID）。
 - **调整 tier**：修改 `plugins/<id>.json` 的 `tier`（`official` 或 `listed`）。
 - **撤回某个版本**（yank）：给该版本的 `yanked` 写 `{"reason": "...", "since": "<UTC 时间>"}`。
   PyPI 侧的撤回会被自动同步，但 CI 永远不会清除撤回标记。
@@ -88,7 +108,7 @@ uv run python -m registry icon <id> <文件或 https 地址>
 uv run python -m registry discover [--id <id>]
 uv run python -m registry test <id> [--version V] [--tenko-ref 标签 | --tenko-path 本地仓库]
 uv run python -m registry retest
-uv run python -m registry check-submission --source <包名|仓库@标签> --submitter <用户名> [--tags a,b] [--icon URL]
+uv run python -m registry check-submission --source <包名|仓库@标签> --submitter <用户名> --category <ID> [--tags a,b] [--icon URL]
 ```
 
 `test` 需要 `uv` 和网络；`check-submission` 会访问 GitHub API，设置环境变量 `GITHUB_TOKEN` 后才能查询协作者权限。

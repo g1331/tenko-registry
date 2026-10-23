@@ -18,6 +18,7 @@
 {
   "schema_version": 1,
   "generated_at": "2026-10-21T00:00:00Z",
+  "categories": {"manage": "群管理", "tool": "实用工具", "other": "其他"},
   "plugins": {
     "example": {
       "name": "示例插件",
@@ -25,7 +26,8 @@
       "authors": [{"name": "you", "github": "you"}],
       "homepage": "https://github.com/you/tenko-plugin-example",
       "license": "MIT",
-      "tags": ["工具"],
+      "category": "tool",
+      "tags": ["翻译"],
       "tier": "listed",
       "icon": "icons/example-3f9a1c2e.png",
       "source": {"type": "pypi", "package": "tenko-plugin-example"},
@@ -58,6 +60,7 @@
 | --- | --- | --- |
 | `schema_version` | 整数 | 固定为 `1` |
 | `generated_at` | 字符串 | 生成时间。每天会重新发布一次，所以客户端可以用它判断目录是否过期 |
+| `categories` | 对象 | 分类 ID 到显示名，按 `categories.txt` 的顺序；客户端按这个顺序展示分类筛选 |
 | `plugins` | 对象 | 键是插件 ID，按字母序排列 |
 | `blocked` | 对象 | 屏蔽名单，见下文 |
 
@@ -73,7 +76,8 @@
 | `authors` | 列表 | `plugin.metadata` 的 `author` | 每项 `{name, github}`；`github` 在作者名与提交者用户名一致时填写，否则为 `null`；元数据没有作者时用提交者 |
 | `homepage` | 字符串 | 包的项目链接（Homepage、Source、Repository），都没有时用 GitHub 仓库地址 | https 地址 |
 | `license` | 字符串 | 包的 `license`（SPDX 表达式） | 必须在 `licenses.txt` 允许列表内，写入时使用规范大小写 |
-| `tags` | 字符串列表 | 提交者在 issue 中填写 | 最多 5 个，每个 1 到 16 个字符；可以为空 |
+| `category` | 字符串 | 提交者在 issue 中选择，维护者可调整 | 必须是 `categories` 里的一个 ID；用于分类筛选 |
+| `tags` | 字符串列表 | 提交者在 issue 中填写 | 最多 5 个，每个 1 到 16 个字符；可以为空。只用于搜索，不作为筛选项 |
 | `tier` | 字符串 | 维护者 | `official`（Tenko 官方维护）或 `listed`（社区收录）；新收录一律为 `listed` |
 | `icon` | 字符串或缺省 | 图标流程产出 | 相对路径 `icons/<id>-<sha256 前 8 位>.png`；没有图标时省略（本仓库数据文件里为 `null`） |
 | `source` | 对象 | 提交者在 issue 中填写 | 见下文 |

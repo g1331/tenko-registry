@@ -43,6 +43,13 @@ def builtin_ids(root: Path = ROOT) -> set[str]:
     return set((root / "builtin_ids.txt").read_text(encoding="utf-8").split())
 
 
+def categories(root: Path = ROOT) -> dict[str, str]:
+    """``categories.txt``：每行 ``<ID> <显示名>``，按文件顺序。"""
+
+    lines = (root / "categories.txt").read_text(encoding="utf-8").splitlines()
+    return dict(line.split(maxsplit=1) for line in lines if line.strip())
+
+
 def read_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -184,6 +191,8 @@ def validate_plugin(
         err("homepage 必须是 https 地址")
     if not is_str(entry.get("license")):
         err("license 必须是 SPDX 标识符字符串")
+    if entry.get("category") not in categories(root):
+        err(f"category 只能是 {', '.join(categories(root))} 之一")
     tags = entry.get("tags")
     if not (
         isinstance(tags, list)

@@ -5,12 +5,12 @@ from __future__ import annotations
 import re
 
 # 与 submit.yml 里各字段的 label 前缀保持一致。
-FIELDS = {"source": "插件来源", "tags": "标签", "icon": "图标", "confirm": "确认"}
+FIELDS = {"source": "插件来源", "category": "分类", "tags": "标签", "icon": "图标", "confirm": "确认"}
 URL = re.compile(r"https://[^\s)\"'>\]]+")
 
 
 def parse_issue(body: str) -> dict[str, str]:
-    """返回 {source, tags, icon}；tags 为逗号分隔，缺省字段为空串。"""
+    """返回 {source, category, tags, icon}；tags 为逗号分隔，缺省字段为空串。"""
 
     sections: dict[str, str] = {}
     for part in re.split(r"^### +", body.replace("\r\n", "\n"), flags=re.M)[1:]:
@@ -28,4 +28,4 @@ def parse_issue(body: str) -> dict[str, str]:
         raise ValueError("请在“插件来源”中填写一个 PyPI 包名或 GitHub 地址@标签")
     tags = [t for t in re.split(r"[,，、\s]+", field("tags")) if t]
     icon_match = URL.search(field("icon"))
-    return {"source": source, "tags": ",".join(tags), "icon": icon_match[0] if icon_match else ""}
+    return {"source": source, "category": field("category"), "tags": ",".join(tags), "icon": icon_match[0] if icon_match else ""}

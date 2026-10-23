@@ -43,9 +43,10 @@ jobs:
             exit 0
           fi
           source=$(sed -n 's/^source=//p' "$RUNNER_TEMP/form.env")
+          category=$(sed -n 's/^category=//p' "$RUNNER_TEMP/form.env")
           tags=$(sed -n 's/^tags=//p' "$RUNNER_TEMP/form.env")
           icon=$(sed -n 's/^icon=//p' "$RUNNER_TEMP/form.env")
-          args=(--source "$source" --submitter "$SUBMITTER" --tags "$tags")
+          args=(--source "$source" --submitter "$SUBMITTER" --category "$category" --tags "$tags")
           if [ -n "$icon" ]; then args+=(--icon "$icon"); fi
           if uv run python -m registry check-submission "${args[@]}" > out/report.md; then
             echo "ok=true" >> "$GITHUB_OUTPUT"

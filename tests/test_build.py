@@ -12,6 +12,7 @@ ENTRY = {
     "authors": [{"name": "you", "github": "you"}],
     "homepage": "https://github.com/you/tenko-plugin-example",
     "license": "MIT",
+    "category": "tool",
     "tags": ["工具"],
     "tier": "listed",
     "icon": None,
@@ -59,6 +60,7 @@ def test_build_writes_index_and_copies_icons(root, tmp_path):
     index = json.loads((out / "index.json").read_text(encoding="utf-8"))
     assert index["schema_version"] == 1 and index["generated_at"] == "2026-10-21T00:00:00Z"
     assert index["blocked"] == {}
+    assert index["categories"]["tool"] == "实用工具"
     plugin = index["plugins"]["example"]
     assert [v["version"] for v in plugin["versions"]] == ["0.2.0", "0.1.0"]
     assert (out / plugin["icon"]).read_bytes() == png
@@ -70,13 +72,15 @@ def test_build_omits_null_icon(root, tmp_path):
     assert "icon" not in index["plugins"]["example"]
 
 
-@pytest.mark.parametrize("case", ["icon_hash", "builtin_id", "version_order"])
+@pytest.mark.parametrize("case", ["icon_hash", "builtin_id", "version_order", "category"])
 def test_build_rejects_invalid_data(root, tmp_path, case):
     png = png_bytes((128, 128))
     if case == "icon_hash":
         put(root, "example", ENTRY, png, icon_hash="00000000")
     elif case == "builtin_id":
         put(root, "status", ENTRY)
+    elif case == "category":
+        put(root, "example", {**ENTRY, "category": "实用工具"})  # 要写 ID，不是显示名
     else:
         put(root, "example", {**ENTRY, "versions": ENTRY["versions"][::-1]})
     with pytest.raises(ValidationError):

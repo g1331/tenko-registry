@@ -9,6 +9,7 @@ from typing import Any
 from .model import (
     ROOT,
     SCHEMA_VERSION,
+    categories,
     normalize_dist,
     now_iso,
     plugin_files,
@@ -76,6 +77,7 @@ def build(out: Path, root: Path = ROOT, generated_at: str | None = None) -> dict
     index = {
         "schema_version": SCHEMA_VERSION,
         "generated_at": generated_at or now_iso(),
+        "categories": categories(root),
         "plugins": {
             plugin_id: {k: v for k, v in entry.items() if not (k == "icon" and v is None)}
             for plugin_id, entry in sorted(plugins.items())

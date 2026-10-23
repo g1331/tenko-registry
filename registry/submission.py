@@ -24,6 +24,7 @@ from .model import (
     PLUGIN_ID,
     ROOT,
     builtin_ids,
+    categories,
     normalize_dist,
     read_json,
     save_plugin,
@@ -151,7 +152,7 @@ def author_name(author: Any) -> str:
 
 def derive_entry(
     source: dict[str, Any], probe: dict[str, Any], license_id: str, submitter: str, repo_url: str,
-    tags: list[str],
+    tags: list[str], category: str,
 ) -> dict[str, Any]:
     meta = probe["metadata"]
     names = [n for n in map(author_name, meta.get("author") or []) if n] or [submitter]
@@ -166,6 +167,7 @@ def derive_entry(
         "authors": [{"name": n, "github": submitter if n.lower() == submitter.lower() else None} for n in names],
         "homepage": homepage,
         "license": license_id,
+        "category": category,
         "tags": tags,
         "tier": "listed",
         "icon": None,
@@ -178,6 +180,7 @@ def check_submission(
     source_text: str,
     submitter: str,
     *,
+    category: str = "",
     tags: list[str] | None = None,
     icon: str | None = None,
     root: Path = ROOT,
@@ -189,7 +192,7 @@ def check_submission(
     report = Report()
     tags = tags or []
     try:
-        _run(report, source_text, submitter, tags, icon, root, deps, token or os.environ.get("GITHUB_TOKEN"), test_kwargs)
+        _run(report, source_text, submitter, category, tags, icon, root, deps, token or os.environ.get("GITHUB_TOKEN"), test_kwargs)
     except Rejected as error:
         report.failure = str(error)
     except net.NetError as error:
@@ -199,9 +202,22 @@ def check_submission(
     return report
 
 
-def _run(report, source_text, submitter, tags, icon, root, deps, token, test_kwargs) -> None:
+def resolve_category(text: str, root: Path = ROOT) -> str:
+    """表单给出显示名，命令行可以直接给 ID；两种都接受，返回 ID。"""
+
+    known = categories(root)
+    text = text.strip()
+    found = text if text in known else next((k for k, v in known.items() if v == text), None)
+    if found is None:
+        choices = "、".join(f"{v}（{k}）" for k, v in known.items())
+        raise Rejected(f"请选择一个分类，可选：{choices}")
+    return found
+
+
+def _run(report, source_text, submitter, category, tags, icon, root, deps, token, test_kwargs) -> None:
     source = parse_source(source_text)
     report.passed.append(f"来源格式与命名: `{source_text.strip()}`")
+    category = resolve_category(category, root)
 
     if len(tags) > MAX_TAGS or any(not 0 < len(t) <= MAX_TAG_LENGTH for t in tags):
         raise Rejected(f"标签最多 {MAX_TAGS} 个，每个 1 到 {MAX_TAG_LENGTH} 个字符")
@@ -261,7 +277,7 @@ def _run(report, source_text, submitter, tags, icon, root, deps, token, test_kwa
         raise Rejected(f"`description` 不能超过 {MAX_DESCRIPTION} 个字符，当前 {len(description)} 个")
 
     entry = derive_entry(
-        source, probe, license_id, submitter, f"https://github.com/{owner}/{repo}", tags
+        source, probe, license_id, submitter, f"https://github.com/{owner}/{repo}", tags, category
     )
     png = _icon_bytes(report, icon, meta.get("icon"), deps)
     entry["versions"] = versions
@@ -276,7 +292,8 @@ def _run(report, source_text, submitter, tags, icon, root, deps, token, test_kwa
         "| 字段 | 值 |", "| --- | --- |",
         f"| 名称 | {entry['name']} |", f"| 简介 | {entry['description']} |",
         f"| 作者 | {', '.join(a['name'] for a in entry['authors'])} |",
-        f"| 主页 | {entry['homepage']} |", f"| 标签 | {', '.join(tags) or '（无）'} |",
+        f"| 主页 | {entry['homepage']} |",
+        f"| 分类 | {categories(root)[category]} |", f"| 标签 | {', '.join(tags) or '（无）'} |",
         f"| 图标 | {'已处理' if png else '无'} |", f"| 收录版本数 | {len(versions)}（仅 {version['version']} 经过测试） |",
     ]
 

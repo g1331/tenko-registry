@@ -9,6 +9,7 @@
   ],
   "homepage": "https://github.com/g1331/tenko/tree/main/examples/tenko-plugin-example",
   "license": "GPL-3.0-only",
+  "category": "library",
   "tags": [
     "示例"
   ],

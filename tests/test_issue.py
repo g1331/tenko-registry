@@ -6,6 +6,10 @@ BODY = """### 插件来源
 
 tenko-plugin-demo
 
+### 分类
+
+娱乐
+
 ### 标签（可选）
 
 工具, 娱乐
@@ -23,6 +27,7 @@ tenko-plugin-demo
 def test_parse_filled_form():
     assert parse_issue(BODY) == {
         "source": "tenko-plugin-demo",
+        "category": "娱乐",
         "tags": "工具,娱乐",
         "icon": "https://github.com/user-attachments/assets/abc-123",
     }
@@ -33,3 +38,11 @@ def test_empty_optional_fields_and_unchecked_confirmation():
     assert parse_issue(empty)["tags"] == "" and parse_issue(empty)["icon"] == ""
     with pytest.raises(ValueError):
         parse_issue(BODY.replace("[x]", "[ ]"))
+
+
+def test_category_accepts_label_or_id_and_lists_choices(root):
+    from registry.submission import Rejected, resolve_category
+
+    assert resolve_category("娱乐", root) == resolve_category("fun", root) == "fun"
+    with pytest.raises(Rejected, match="其他（other）"):
+        resolve_category("", root)
