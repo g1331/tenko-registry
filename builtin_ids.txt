@@ -4,10 +4,12 @@ feature_manager
 friend_request
 group_manager
 helper
+notify
 perm_manager
 plugin_manager
 response_manager
 startup_notify
+stats
 status
 updater
 webui_account

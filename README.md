@@ -80,7 +80,7 @@ issue 里显式给出的图标不合格会拒绝收录；`plugin.metadata` 里�
 
 - `submit.yml`：issue 带 `submission` 标签时检查并回复报告，通过则开合并请求。检查在只读权限的 job
   里运行（会安装并导入第三方代码，且子进程拿不到令牌），写权限的 job 只复制数据文件并重新校验。
-- `update.yml`：每天发现新版本、重测每个插件最新的 3 个未撤回版本，校验后直接提交到 `main`。
+- `update.yml`：每天发现新版本、重测每个插件最新的 3 个未撤回版本（`requires_api` 不含测试宿主的版本跳过，保留上次结果），校验后直接提交到 `main`。
 - `pages.yml`：`main` 有推送或 `update` 完成时执行 `build`，把 `dist/` 强制发布到 `gh-pages`。
 - `ci.yml`：非 `main` 分支和 PR 上跑测试，并校验全部数据。
 
