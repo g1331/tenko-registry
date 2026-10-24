@@ -1,0 +1,47 @@
+{
+  "name": "AI群友",
+  "description": "接入 DeepSeek，用人设口吻陪群友聊天，内置“大肥鱼”。",
+  "authors": [
+    {
+      "name": "13",
+      "github": null
+    }
+  ],
+  "homepage": "https://github.com/g1331/tenko-plugins/tree/main/plugins/persona_chat",
+  "license": "GPL-3.0-only",
+  "category": "ai",
+  "tags": [
+    "AI",
+    "DeepSeek",
+    "聊天",
+    "人设"
+  ],
+  "tier": "official",
+  "icon": "icons/persona_chat-677da8eb.png",
+  "source": {
+    "type": "pypi",
+    "package": "tenko-plugin-persona-chat"
+  },
+  "versions": [
+    {
+      "version": "0.1.0",
+      "pin": {
+        "sha256": [
+          "1d59ddea3d1c12671101ea253e4c7424d4fdda4a9e1bdd9b1864a2b08132da30",
+          "a13c097f8df4295a1f6632eae98f05234734888bb1c9c59a03fbff18861502ec"
+        ]
+      },
+      "requires_api": "<0.5,>=0.4.1",
+      "requires_python": "<3.14,>=3.11",
+      "published_at": "2026-10-24T05:05:54Z",
+      "tested": {
+        "tenko": "4.0.0-rc42",
+        "api": "0.4.2",
+        "python": "3.12",
+        "at": "2026-10-24T05:07:19Z"
+      },
+      "valid": true,
+      "yanked": null
+    }
+  ]
+}
