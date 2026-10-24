@@ -16,7 +16,7 @@
     "聊天",
     "人设"
   ],
-  "tier": "listed",
+  "tier": "official",
   "icon": "icons/persona_chat-677da8eb.png",
   "source": {
     "type": "pypi",
