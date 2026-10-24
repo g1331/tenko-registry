@@ -24,6 +24,46 @@
   },
   "versions": [
     {
+      "version": "0.1.2",
+      "pin": {
+        "sha256": [
+          "74cdc6f3cdbdbc2e1c696287175b94fe20f7a08f56436328abd9e9fb2637d340",
+          "e838457a8a338f4d1159693eb4a2dc18ffa0089486ebfb0d582a894feea78df2"
+        ]
+      },
+      "requires_api": "<0.5,>=0.4.1",
+      "requires_python": "<3.14,>=3.11",
+      "published_at": "2026-10-24T05:59:11Z",
+      "tested": {
+        "tenko": "4.0.0-rc43",
+        "api": "0.4.2",
+        "python": "3.12",
+        "at": "2026-10-24T06:02:43Z"
+      },
+      "valid": true,
+      "yanked": null
+    },
+    {
+      "version": "0.1.1",
+      "pin": {
+        "sha256": [
+          "28aa8c8b5251b65ebdcaa263277a4bd71b1654321a48036ce0de8c2c20b07d04",
+          "44972d5cbf2df94d39d558d3db0f280df214004ac89d836fbba704fdf911c455"
+        ]
+      },
+      "requires_api": "<0.5,>=0.4.1",
+      "requires_python": "<3.14,>=3.11",
+      "published_at": "2026-10-24T05:36:59Z",
+      "tested": {
+        "tenko": "4.0.0-rc43",
+        "api": "0.4.2",
+        "python": "3.12",
+        "at": "2026-10-24T06:02:46Z"
+      },
+      "valid": true,
+      "yanked": null
+    },
+    {
       "version": "0.1.0",
       "pin": {
         "sha256": [
@@ -35,10 +75,10 @@
       "requires_python": "<3.14,>=3.11",
       "published_at": "2026-10-24T05:05:54Z",
       "tested": {
-        "tenko": "4.0.0-rc42",
+        "tenko": "4.0.0-rc43",
         "api": "0.4.2",
         "python": "3.12",
-        "at": "2026-10-24T05:07:19Z"
+        "at": "2026-10-24T06:02:49Z"
       },
       "valid": true,
       "yanked": null
