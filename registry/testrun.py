@@ -221,16 +221,30 @@ def format_outcome(plugin_id: str, version: str, outcome: Outcome) -> str:
 
 
 def retest(
-    root: Path = ROOT, *, count: int = 3, tenko_ref: str | None = None, **kwargs: Any
+    root: Path = ROOT,
+    *,
+    count: int = 3,
+    tenko_ref: str | None = None,
+    plugin_id: str | None = None,
+    untested: bool = False,
+    **kwargs: Any,
 ) -> tuple[list[str], list[str]]:
-    """对每个插件最新的 count 个未撤回版本重新测试，返回 (结果行, 环境错误)。"""
+    """对每个插件最新的 count 个未撤回版本重新测试，返回 (结果行, 环境错误)。
+
+    ``untested`` 只测其中还没测过的版本：每小时跑一次，让新版本尽快能装，又不刷新旧结果。
+    """
 
     ref = tenko_ref or net.latest_tenko_tag()
     lines: list[str] = [f"测试宿主: Tenko {ref}"]
     infra: list[str] = []
-    for path in plugin_files(root):
+    paths = [root / "plugins" / f"{plugin_id}.json"] if plugin_id else plugin_files(root)
+    for path in paths:
         entry = load_plugin(path.stem, root)
         fresh = [v for v in entry["versions"] if v["yanked"] is None][:count]
+        if untested:
+            fresh = [v for v in fresh if v["tested"] is None]
+        if not fresh:
+            continue
         for item in fresh:
             try:
                 outcome = run_test(entry["source"], item, plugin_id=path.stem, tenko_ref=ref, **kwargs)

@@ -27,7 +27,8 @@
 ### 哪些信息是自动得到的
 
 名称、简介、作者、主页、许可证来自你的包；版本号、文件哈希、发布时间、`tenko-api` 与 Python 兼容范围由 CI
-从 PyPI 或 git 标签读取，之后每天自动发现新版本并重新测试。你发布新版本不需要再提交任何东西。
+从 PyPI 或 git 标签读取，之后每小时自动发现并测试新版本。你发布新版本不需要再提交任何东西；
+想发版后几分钟内就能装，见下面的“发版后立即收录”。
 每个字段的来源见 SCHEMA.md。
 
 CI 的测试会安装你的插件并用真实的 Tenko 宿主加载它，所以插件必须能在没有额外配置的情况下被加载
@@ -80,9 +81,17 @@ issue 里显式给出的图标不合格会拒绝收录；`plugin.metadata` 里�
 
 - `submit.yml`：issue 带 `submission` 标签时检查并回复报告，通过则开合并请求。检查在只读权限的 job
   里运行（会安装并导入第三方代码，且子进程拿不到令牌），写权限的 job 只复制数据文件并重新校验。
-- `update.yml`：每天发现新版本、重测每个插件最新的 3 个未撤回版本（`requires_api` 不含测试宿主的版本跳过，保留上次结果），校验后直接提交到 `main`。
-- `pages.yml`：`main` 有推送或 `update` 完成时执行 `build`，把 `dist/` 强制发布到 `gh-pages`。
+- `update.yml`：每小时发现新版本并只测还没测过的版本；每天 03:17 UTC 和手动触发时重测每个插件最新的 3 个未撤回版本（`requires_api` 不含测试宿主的版本跳过，保留上次结果）。校验后直接提交到 `main`。收到 `plugin-released` 的 `repository_dispatch` 时只处理 `client_payload.id` 这一个插件。
+- `pages.yml`：`main` 有推送、或 `update` 有变化或全量重测后执行 `build`，把 `dist/` 强制发布到 `gh-pages`。
 - `ci.yml`：非 `main` 分支和 PR 上跑测试，并校验全部数据。
+
+### 发版后立即收录
+
+插件仓库的发布工作流上传 PyPI 之后，用一个对本仓库有 Contents 读写权限的令牌发 `repository_dispatch`：
+
+```bash
+gh api repos/g1331/tenko-registry/dispatches -f event_type=plugin-released -f 'client_payload[id]=<插件 ID>'
+```
 
 首次启用需要：仓库设置里允许 GitHub Actions 创建合并请求；Pages 的来源选 `gh-pages` 分支。
 用 `GITHUB_TOKEN` 创建的合并请求不会自动触发 `ci.yml`，合并前请留意报告。
@@ -107,7 +116,7 @@ uv run python -m registry build [--out dist]
 uv run python -m registry icon <id> <文件或 https 地址>
 uv run python -m registry discover [--id <id>]
 uv run python -m registry test <id> [--version V] [--tenko-ref 标签 | --tenko-path 本地仓库]
-uv run python -m registry retest
+uv run python -m registry retest [--id <id>] [--untested]
 uv run python -m registry check-submission --source <包名|仓库@标签> --submitter <用户名> --category <ID> [--tags a,b] [--icon URL]
 ```
 

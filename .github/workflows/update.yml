@@ -1,11 +1,16 @@
 name: update
 
-# 每天发现新版本并重测。会安装第三方代码的 refresh job 只有只读权限，
-# 只有不运行插件代码的 commit job 才能写 main。
-# 手动触发：gh workflow run update.yml -R g1331/tenko-registry
+# 每小时发现新版本、只测还没测过的版本；每天一次重测全部插件最新的几个版本。
+# 插件仓库发版后可以发 repository_dispatch（类型 plugin-released，client_payload.id 为插件 ID）
+# 立刻处理这一个插件，不用等整点。
+# 会安装第三方代码的 refresh job 只有只读权限，只有不运行插件代码的 commit job 才能写 main。
+# 手动触发（全量）：gh workflow run update.yml -R g1331/tenko-registry
 on:
   schedule:
-    - cron: "17 3 * * *"
+    - cron: "17 3 * * *" # 全量重测
+    - cron: "47 * * * *" # 只测新版本
+  repository_dispatch:
+    types: [plugin-released]
   workflow_dispatch:
 
 concurrency:
@@ -13,6 +18,9 @@ concurrency:
   cancel-in-progress: false
 
 permissions: {}
+
+env:
+  FULL: ${{ github.event_name == 'workflow_dispatch' || github.event.schedule == '17 3 * * *' }}
 
 jobs:
   refresh:
@@ -26,10 +34,24 @@ jobs:
           persist-credentials: false
       - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
       - run: uv sync --locked
-      - name: 发现新版本
-        run: uv run python -m registry discover
-      - name: 重测最新版本
-        run: uv run python -m registry retest
+      - name: 发现新版本并测试
+        env:
+          PLUGIN_ID: ${{ github.event.client_payload.id }}
+        run: |
+          args=()
+          if [ -n "$PLUGIN_ID" ]; then
+            if ! [[ "$PLUGIN_ID" =~ ^[a-z0-9_]+$ ]]; then
+              echo "::error::插件 ID 不合法：$PLUGIN_ID"
+              exit 1
+            fi
+            args=(--id "$PLUGIN_ID")
+          fi
+          uv run python -m registry discover "${args[@]}"
+          if [ "$FULL" = true ]; then
+            uv run python -m registry retest
+          else
+            uv run python -m registry retest --untested "${args[@]}"
+          fi
       # 重测中途失败也要保留已经写下的结果（retest 逐个插件落盘）。
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: ${{ !cancelled() }}
@@ -45,6 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: write # 触发 pages
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
@@ -64,4 +87,11 @@ jobs:
             git add plugins
             git commit -m "chore(registry): 更新版本与测试结果"
             git push origin HEAD:main
+            changed=true
           fi
+          # 每小时的检查多数什么都没变，只在有变化或全量重测（刷新 generated_at）时重新发布。
+          if [ "${changed:-}" = true ] || [ "$FULL" = true ]; then
+            gh workflow run pages.yml --ref main
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -1,13 +1,11 @@
 name: pages
 
 # 把 dist/ 发布到 gh-pages 分支（jsDelivr 会镜像这个分支）。
-# update 完成后也会触发：GITHUB_TOKEN 推送不会触发 push 事件，而每日重发布能刷新 generated_at。
+# GITHUB_TOKEN 推送不会触发 push 事件，update 有变化或全量重测时用 workflow_dispatch 触发这里，
+# 每日全量那次重发布能刷新 generated_at。
 on:
   push:
     branches: [main]
-  workflow_run:
-    workflows: [update]
-    types: [completed]
   workflow_dispatch:
 
 concurrency:
@@ -18,7 +16,6 @@ permissions: {}
 
 jobs:
   publish:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: write

@@ -67,7 +67,7 @@ def cmd_check_submission(args: argparse.Namespace) -> int:
 
 def cmd_retest(args: argparse.Namespace) -> int:
     kwargs = _host_args(args)
-    lines, infra = retest(**kwargs)
+    lines, infra = retest(plugin_id=args.id, untested=args.untested, **kwargs)
     print("\n".join(lines))
     for line in infra:
         print(f"环境错误 {line}", file=sys.stderr)
@@ -124,6 +124,8 @@ def main(argv: list[str] | None = None) -> int:
     p.set_defaults(func=cmd_check_submission)
 
     p = sub.add_parser("retest", help="用最新 Tenko 重测每个插件最新的 3 个版本")
+    p.add_argument("--id")
+    p.add_argument("--untested", action="store_true", help="只测还没测过的版本")
     add_host_options(p)
     p.set_defaults(func=cmd_retest)
 
