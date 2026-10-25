@@ -6,6 +6,7 @@ import json
 import os
 import subprocess
 import tempfile
+import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -30,6 +31,9 @@ DEFAULT_PYTHON = "3.12"
 PROBE = Path(__file__).with_name("probe.py")
 INSTALL_TIMEOUT = 1200
 PROBE_TIMEOUT = 300
+# 刚发布的版本：发现用的 PyPI JSON 接口已经有了，uv 用的简单索引还要等几分钟 CDN 刷新
+INDEX_ATTEMPTS = 6
+INDEX_WAIT = 30
 
 
 class InfraError(RuntimeError):
@@ -68,6 +72,10 @@ def _tail(proc: subprocess.CompletedProcess[str], lines: int = 15) -> str:
     return "\n".join((proc.stderr or proc.stdout or "").strip().splitlines()[-lines:])
 
 
+def _not_on_index(proc: subprocess.CompletedProcess[str], spec: str) -> bool:
+    return f"no version of {spec.lower()}" in (proc.stderr or "").lower()
+
+
 def plugin_spec(source: dict[str, Any], version: dict[str, Any]) -> str:
     if source["type"] == "pypi":
         return f"{source['package']}=={version['version']}"
@@ -99,6 +107,7 @@ def run_test(
     tenko_path: Path | None = None,
     python: str = DEFAULT_PYTHON,
     runner: Callable[[list[str], int], subprocess.CompletedProcess[str]] = run_cmd,
+    sleep: Callable[[float], None] = time.sleep,
 ) -> Outcome:
     outcome = Outcome()
     with tempfile.TemporaryDirectory(prefix="tenko-registry-") as tmp:
@@ -125,10 +134,19 @@ def run_test(
         constraints = work / "constraints.txt"
         constraints.write_text(frozen.stdout, encoding="utf-8")
 
-        proc = step(
-            [*install, "-c", str(constraints), plugin_spec(source, version)],
-            INSTALL_TIMEOUT, "安装插件",
-        )
+        spec = plugin_spec(source, version)
+        cmd = [*install, "-c", str(constraints), spec]
+        if source["type"] == "pypi":
+            cmd += ["--refresh-package", source["package"]]
+        for attempt in range(INDEX_ATTEMPTS):
+            proc = step(cmd, INSTALL_TIMEOUT, "安装插件")
+            if not (proc.returncode and _not_on_index(proc, spec)):
+                break
+            if attempt + 1 < INDEX_ATTEMPTS:
+                sleep(INDEX_WAIT)
+        else:
+            # 不算插件的错：留着不写测试结果，下一轮 --untested 会再测
+            raise InfraError(f"PyPI 索引里还查不到 {spec}，下一轮再测")
         out = work / "probe.json"
         if proc.returncode:
             outcome.errors.append(f"插件安装失败:\n{_tail(proc)}")
