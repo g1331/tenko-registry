@@ -1,0 +1,46 @@
+{
+  "name": "战地一查询",
+  "description": "经 bf-manager 查询战地一玩家战绩、武器、载具和服务器。",
+  "authors": [
+    {
+      "name": "13",
+      "github": null
+    }
+  ],
+  "homepage": "https://github.com/g1331/tenko-plugins/tree/main/plugins/bf1",
+  "license": "GPL-3.0-only",
+  "category": "gametool",
+  "tags": [
+    "战地1",
+    "BF1",
+    "战绩"
+  ],
+  "tier": "official",
+  "icon": null,
+  "source": {
+    "type": "pypi",
+    "package": "tenko-plugin-bf1"
+  },
+  "versions": [
+    {
+      "version": "0.1.0",
+      "pin": {
+        "sha256": [
+          "142f442091e97435d3d6e56309fe102e9e0a7ee3131b0692c5e8a561fc13348f",
+          "cae45ac0e0dd8c03a1383a236493c2df33afb047ae5412293783cfbe757fcbe7"
+        ]
+      },
+      "requires_api": "<0.5,>=0.4",
+      "requires_python": "<3.14,>=3.11",
+      "published_at": "2026-10-25T12:31:30Z",
+      "tested": {
+        "tenko": "4.0.0-rc47",
+        "api": "0.4.2",
+        "python": "3.12",
+        "at": "2026-10-25T12:34:40Z"
+      },
+      "valid": true,
+      "yanked": null
+    }
+  ]
+}
