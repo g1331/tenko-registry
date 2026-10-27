@@ -1,0 +1,47 @@
+{
+  "name": "Apex 查询",
+  "description": "查询 Apex 英雄玩家战绩、地图轮换、猎杀线、服务器状态和官方资讯。",
+  "authors": [
+    {
+      "name": "13",
+      "github": null
+    }
+  ],
+  "homepage": "https://github.com/g1331/tenko-plugins/tree/main/plugins/apex",
+  "license": "GPL-3.0-only",
+  "category": "gametool",
+  "tags": [
+    "Apex",
+    "Apex英雄",
+    "战绩",
+    "猎杀线"
+  ],
+  "tier": "listed",
+  "icon": null,
+  "source": {
+    "type": "pypi",
+    "package": "tenko-plugin-apex"
+  },
+  "versions": [
+    {
+      "version": "0.1.0",
+      "pin": {
+        "sha256": [
+          "4ebfe7df88191c3370863399c517c11f16a6025ddcd905b5f7813ae6fe765312",
+          "6852e5e0151526b67efe3286c9c59f4be65561172c66166b254174e82e0f7bf1"
+        ]
+      },
+      "requires_api": "<0.5,>=0.4",
+      "requires_python": "<3.14,>=3.11",
+      "published_at": "2026-10-27T08:07:00Z",
+      "tested": {
+        "tenko": "4.0.0-rc49",
+        "api": "0.4.2",
+        "python": "3.12",
+        "at": "2026-10-27T08:20:15Z"
+      },
+      "valid": true,
+      "yanked": null
+    }
+  ]
+}
