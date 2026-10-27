@@ -16,8 +16,8 @@
     "战绩",
     "猎杀线"
   ],
-  "tier": "listed",
-  "icon": null,
+  "tier": "official",
+  "icon": "icons/apex-3a4b0d33.png",
   "source": {
     "type": "pypi",
     "package": "tenko-plugin-apex"
