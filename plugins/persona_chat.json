@@ -38,7 +38,7 @@
         "tenko": "4.0.0-rc50",
         "api": "0.4.2",
         "python": "3.12",
-        "at": "2026-10-27T17:04:10Z"
+        "at": "2026-10-28T09:50:17Z"
       },
       "valid": true,
       "yanked": null
@@ -55,10 +55,10 @@
       "requires_python": "<3.14,>=3.11",
       "published_at": "2026-10-27T14:15:44Z",
       "tested": {
-        "tenko": "4.0.0-rc49",
+        "tenko": "4.0.0-rc50",
         "api": "0.4.2",
         "python": "3.12",
-        "at": "2026-10-27T14:16:50Z"
+        "at": "2026-10-28T09:50:21Z"
       },
       "valid": true,
       "yanked": null
@@ -75,10 +75,10 @@
       "requires_python": "<3.14,>=3.11",
       "published_at": "2026-10-27T13:06:30Z",
       "tested": {
-        "tenko": "4.0.0-rc49",
+        "tenko": "4.0.0-rc50",
         "api": "0.4.2",
         "python": "3.12",
-        "at": "2026-10-27T13:10:11Z"
+        "at": "2026-10-28T09:50:25Z"
       },
       "valid": true,
       "yanked": null
