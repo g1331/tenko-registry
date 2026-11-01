@@ -36,7 +36,7 @@
         "tenko": "4.0.0-rc52",
         "api": "0.4.3",
         "python": "3.12",
-        "at": "2026-11-01T07:16:53Z"
+        "at": "2026-11-01T10:38:22Z"
       },
       "valid": true,
       "yanked": null
@@ -53,10 +53,10 @@
       "requires_python": "<3.14,>=3.11",
       "published_at": "2026-11-01T06:15:35Z",
       "tested": {
-        "tenko": "4.0.0-rc51",
-        "api": "0.4.2",
+        "tenko": "4.0.0-rc52",
+        "api": "0.4.3",
         "python": "3.12",
-        "at": "2026-11-01T06:16:51Z"
+        "at": "2026-11-01T10:38:25Z"
       },
       "valid": true,
       "yanked": null
