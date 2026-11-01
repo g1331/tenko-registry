@@ -32,6 +32,8 @@ from .model import (
 )
 
 PYPI_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
+SIMPLE = "https://pypi.org/simple"
+SIMPLE_JSON = {"Accept": "application/vnd.pypi.simple.v1+json"}
 LOGIN = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})")
 PUSH_ROLES = {"admin", "maintain", "write"}
 
@@ -126,6 +128,47 @@ def check_ownership(owner: str, repo: str, submitter: str, token: str | None, de
         )
 
 
+def official_repos(root: Path = ROOT) -> set[str]:
+    """``official.txt``：官方仓库，每行一个 ``<所有者>/<仓库>``，比较时不分大小写。"""
+
+    lines = (root / "official.txt").read_text(encoding="utf-8").splitlines()
+    return {line.strip().lower() for line in lines if line.strip() and not line.startswith("#")}
+
+
+def official_basis(
+    source: dict[str, Any], version: dict[str, Any], repo: str, root: Path, deps: Deps
+) -> str | None:
+    """判断是不是官方插件，返回依据；不是时返回 None。
+
+    PyPI 的项目链接是发布者自己填的，不能作数。PyPI 来源看被测版本每个文件的来源证明
+    （PEP 740，PyPI 上传时已按 Trusted Publishing 核验过发布仓库），全部由官方仓库发布才算；
+    GitHub 来源的仓库就是代码本身，在名单里即可。
+    """
+
+    repos = official_repos(root)
+    if source["type"] == "git":
+        return f"来源仓库 {repo} 在官方名单中" if repo.lower() in repos else None
+    index = deps.get_json(f"{SIMPLE}/{normalize_dist(source['package'])}/", SIMPLE_JSON)
+    wanted = set(version["pin"]["sha256"])
+    files = [f for f in index.get("files", []) if (f.get("hashes") or {}).get("sha256") in wanted]
+    if not wanted or len(files) != len(wanted):
+        return None
+    publishers: set[str] = set()
+    for file in files:
+        if not file.get("provenance"):
+            return None
+        bundles = deps.get_json(file["provenance"]).get("attestation_bundles") or []
+        found = {
+            str(publisher.get("repository"))
+            for publisher in (bundle.get("publisher") or {} for bundle in bundles)
+            if publisher.get("kind") == "GitHub" and str(publisher.get("repository")).lower() in repos
+        }
+        if not found:
+            return None
+        publishers |= found
+    return f"PyPI 来源证明显示由 {'、'.join(sorted(publishers))} 发布"
+
+
 def check_license(probe: dict[str, Any], root: Path) -> str:
     raw = probe.get("license") or (probe.get("metadata") or {}).get("license")
     if not isinstance(raw, str) or "\n" in raw or len(raw) > 100:
@@ -152,7 +195,7 @@ def author_name(author: Any) -> str:
 
 def derive_entry(
     source: dict[str, Any], probe: dict[str, Any], license_id: str, submitter: str, repo_url: str,
-    tags: list[str], category: str,
+    tags: list[str], category: str, tier: str = "listed",
 ) -> dict[str, Any]:
     meta = probe["metadata"]
     names = [n for n in map(author_name, meta.get("author") or []) if n] or [submitter]
@@ -169,7 +212,7 @@ def derive_entry(
         "license": license_id,
         "category": category,
         "tags": tags,
-        "tier": "listed",
+        "tier": tier,
         "icon": None,
         "source": {k: v for k, v in source.items() if k != "tag"},
         "versions": [],
@@ -276,8 +319,14 @@ def _run(report, source_text, submitter, category, tags, icon, root, deps, token
     if len(description) > MAX_DESCRIPTION:
         raise Rejected(f"`description` 不能超过 {MAX_DESCRIPTION} 个字符，当前 {len(description)} 个")
 
+    try:
+        basis = official_basis(source, version, f"{owner}/{repo}", root, deps)
+    except net.NetError as error:
+        basis = None
+        report.notes.append(f"读取 PyPI 来源证明失败，按社区收录处理，维护者可手动调整 tier（{error}）")
     entry = derive_entry(
-        source, probe, license_id, submitter, f"https://github.com/{owner}/{repo}", tags, category
+        source, probe, license_id, submitter, f"https://github.com/{owner}/{repo}", tags, category,
+        "official" if basis else "listed",
     )
     png = _icon_bytes(report, icon, meta.get("icon"), deps)
     entry["versions"] = versions
@@ -294,6 +343,7 @@ def _run(report, source_text, submitter, category, tags, icon, root, deps, token
         f"| 作者 | {', '.join(a['name'] for a in entry['authors'])} |",
         f"| 主页 | {entry['homepage']} |",
         f"| 分类 | {categories(root)[category]} |", f"| 标签 | {', '.join(tags) or '（无）'} |",
+        f"| 等级 | {f'官方（{basis}）' if basis else '社区收录'} |",
         f"| 图标 | {'已处理' if png else '无'} |", f"| 收录版本数 | {len(versions)}（仅 {version['version']} 经过测试） |",
     ]
 
