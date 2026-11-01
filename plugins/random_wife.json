@@ -1,0 +1,45 @@
+{
+  "name": "随机老婆",
+  "description": "群里每天抽一个老婆，抽到两次别人的老婆就抢过来；老婆库由管理员维护，群员可投稿。",
+  "authors": [
+    {
+      "name": "13",
+      "github": null
+    }
+  ],
+  "homepage": "https://github.com/g1331/tenko-plugins/tree/main/plugins/random_wife",
+  "license": "GPL-3.0-only",
+  "category": "fun",
+  "tags": [
+    "抽老婆",
+    "随机老婆"
+  ],
+  "tier": "official",
+  "icon": "icons/random_wife-513e1f20.png",
+  "source": {
+    "type": "pypi",
+    "package": "tenko-plugin-random-wife"
+  },
+  "versions": [
+    {
+      "version": "0.1.0",
+      "pin": {
+        "sha256": [
+          "3570dd6327977ecbe55f296d557c1c55f649361591696733c28175a27c1a706e",
+          "6b3cc5a7c0a976a2e8644fcc1c5d43f393e96365ff61b684ee6ee0ed7a331308"
+        ]
+      },
+      "requires_api": "<0.5,>=0.4",
+      "requires_python": "<3.14,>=3.11",
+      "published_at": "2026-11-01T06:15:35Z",
+      "tested": {
+        "tenko": "4.0.0-rc51",
+        "api": "0.4.2",
+        "python": "3.12",
+        "at": "2026-11-01T06:16:51Z"
+      },
+      "valid": true,
+      "yanked": null
+    }
+  ]
+}
