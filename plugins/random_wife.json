@@ -22,6 +22,21 @@
   },
   "versions": [
     {
+      "version": "0.2.0",
+      "pin": {
+        "sha256": [
+          "46a9f368fff00d479daaf8c6369a852440235e020844415ddbebd74d87486e50",
+          "6347eec7e078cc9661ed48eb10a731cf4a4df882cf76bcd5657e7327185bb86f"
+        ]
+      },
+      "requires_api": "<0.5,>=0.4.3",
+      "requires_python": "<3.14,>=3.11",
+      "published_at": "2026-11-01T06:51:45Z",
+      "tested": null,
+      "valid": false,
+      "yanked": null
+    },
+    {
       "version": "0.1.0",
       "pin": {
         "sha256": [
