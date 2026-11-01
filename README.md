@@ -75,6 +75,7 @@ issue 里显式给出的图标不合格会拒绝收录；`plugin.metadata` 里�
 | `icons/` | 处理后的图标 |
 | `builtin_ids.txt`、`licenses.txt` | 保留的内置插件 ID、允许的许可证 |
 | `categories.txt` | 分类，每行 `<ID> <显示名>`，顺序即展示顺序 |
+| `official.txt` | 官方仓库，每行 `<所有者>/<仓库>`；由它们发布或以它们为来源的插件收录时 tier 为 `official` |
 | `registry/` | CLI，`python -m registry <命令>` |
 
 ### 工作流
@@ -101,7 +102,8 @@ gh api repos/g1331/tenko-registry/dispatches -f event_type=plugin-released -f 'c
 直接编辑数据文件，然后运行 `uv run python -m registry build` 校验。
 
 - **调整分类**：修改 `plugins/<id>.json` 的 `category`（取 `categories.txt` 里的 ID）。
-- **调整 tier**：修改 `plugins/<id>.json` 的 `tier`（`official` 或 `listed`）。
+- **调整 tier**：修改 `plugins/<id>.json` 的 `tier`（`official` 或 `listed`）。收录时会自动判断：PyPI 来源证明显示
+  由 `official.txt` 里的仓库发布，或直接以这些仓库为来源的插件记为 `official`，其余为 `listed`。新增官方仓库就改 `official.txt`。
 - **撤回某个版本**（yank）：给该版本的 `yanked` 写 `{"reason": "...", "since": "<UTC 时间>"}`。
   PyPI 侧的撤回会被自动同步，但 CI 永远不会清除撤回标记。
 - **屏蔽**：在 `blocked.json` 添加条目，并删除 `plugins/` 下对应的文件（build 不允许两者同时存在）。

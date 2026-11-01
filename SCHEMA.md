@@ -78,7 +78,7 @@
 | `license` | 字符串 | 包的 `license`（SPDX 表达式） | 必须在 `licenses.txt` 允许列表内，写入时使用规范大小写 |
 | `category` | 字符串 | 提交者在 issue 中选择，维护者可调整 | 必须是 `categories` 里的一个 ID；用于分类筛选 |
 | `tags` | 字符串列表 | 提交者在 issue 中填写 | 最多 5 个，每个 1 到 16 个字符；可以为空。只用于搜索，不作为筛选项 |
-| `tier` | 字符串 | 维护者 | `official`（Tenko 官方维护）或 `listed`（社区收录）；新收录一律为 `listed` |
+| `tier` | 字符串 | 收录时自动判断，维护者可调整 | `official`（Tenko 官方维护）或 `listed`（社区收录）；PyPI 来源证明显示由 `official.txt` 里的仓库发布，或直接以这些仓库为来源时为 `official` |
 | `icon` | 字符串或缺省 | 图标流程产出 | 相对路径 `icons/<id>-<sha256 前 8 位>.png`；没有图标时省略（本仓库数据文件里为 `null`） |
 | `source` | 对象 | 提交者在 issue 中填写 | 见下文 |
 | `versions` | 列表 | CI | 按版本号从新到旧排列，同一版本号只出现一次；预发布版本也包含，是否采用由客户端决定 |
