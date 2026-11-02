@@ -32,10 +32,10 @@
       "requires_python": "<3.14,>=3.11",
       "published_at": "2026-10-23T09:14:33Z",
       "tested": {
-        "tenko": "4.0.0-rc52",
+        "tenko": "4.0.0-rc53",
         "api": "0.4.3",
         "python": "3.12",
-        "at": "2026-11-01T10:38:27Z"
+        "at": "2026-11-02T11:25:30Z"
       },
       "valid": true,
       "yanked": null
