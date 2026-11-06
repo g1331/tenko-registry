@@ -33,10 +33,10 @@
       "requires_python": "<3.14,>=3.11",
       "published_at": "2026-11-01T06:51:45Z",
       "tested": {
-        "tenko": "4.0.0-rc53",
+        "tenko": "4.0.0-rc54",
         "api": "0.4.3",
         "python": "3.12",
-        "at": "2026-11-05T11:10:14Z"
+        "at": "2026-11-06T11:08:05Z"
       },
       "valid": true,
       "yanked": null
@@ -53,10 +53,10 @@
       "requires_python": "<3.14,>=3.11",
       "published_at": "2026-11-01T06:15:35Z",
       "tested": {
-        "tenko": "4.0.0-rc53",
+        "tenko": "4.0.0-rc54",
         "api": "0.4.3",
         "python": "3.12",
-        "at": "2026-11-05T11:10:18Z"
+        "at": "2026-11-06T11:08:09Z"
       },
       "valid": true,
       "yanked": null
