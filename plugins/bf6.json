@@ -1,0 +1,46 @@
+{
+  "name": "战地六查询",
+  "description": "经 bf-manager 查询战地六玩家的生涯战绩、武器、载具、配备排行和对局估算。",
+  "authors": [
+    {
+      "name": "13",
+      "github": null
+    }
+  ],
+  "homepage": "https://github.com/g1331/tenko-plugins/tree/main/plugins/bf6",
+  "license": "GPL-3.0-only",
+  "category": "gametool",
+  "tags": [
+    "战地6",
+    "BF6",
+    "战绩"
+  ],
+  "tier": "official",
+  "icon": "icons/bf6-b6029aea.png",
+  "source": {
+    "type": "pypi",
+    "package": "tenko-plugin-bf6"
+  },
+  "versions": [
+    {
+      "version": "0.1.0",
+      "pin": {
+        "sha256": [
+          "11bfebe6e87ba877d1e2248ff446856c3d3e03f1cf61a5e9ce3676040c4bfc53",
+          "dff9ba031e386b2bbce76072ecd4a177ebb3d388b6fb7a447f560c63e35a9e5c"
+        ]
+      },
+      "requires_api": "<0.5,>=0.4",
+      "requires_python": "<3.14,>=3.11",
+      "published_at": "2026-11-09T14:42:10Z",
+      "tested": {
+        "tenko": "4.0.0-rc54",
+        "api": "0.4.3",
+        "python": "3.12",
+        "at": "2026-11-09T14:53:00Z"
+      },
+      "valid": true,
+      "yanked": null
+    }
+  ]
+}
