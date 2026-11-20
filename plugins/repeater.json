@@ -21,6 +21,26 @@
   },
   "versions": [
     {
+      "version": "0.3.1",
+      "pin": {
+        "sha256": [
+          "44ef11fe4fb7ed29560ad247ee3765f503edfded9e74e049bb0941d9d40a1409",
+          "e55a83572844be2a4e3a1ab0fa3f5b90d94ed65c4e5bb788885770b371fe9bd5"
+        ]
+      },
+      "requires_api": "<0.5,>=0.4",
+      "requires_python": "<3.14,>=3.11",
+      "published_at": "2026-11-20T15:08:15Z",
+      "tested": {
+        "tenko": "4.0.0-rc54",
+        "api": "0.4.3",
+        "python": "3.12",
+        "at": "2026-11-20T15:12:14Z"
+      },
+      "valid": true,
+      "yanked": null
+    },
+    {
       "version": "0.3.0",
       "pin": {
         "sha256": [
